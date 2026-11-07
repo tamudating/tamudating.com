@@ -4,93 +4,32 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Sign up | TamuDating</title>
-    <meta name="description" content="Create your TamuDating profile and start discovering matches." />
+    <meta name="description" content="Create your TamuDating account." />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body class="auth-page">
-    <div class="auth-shell signup-shell">
-      <div class="auth-panel form-panel wide-panel">
-        <div class="auth-head">
-          <span class="eyebrow">Join TamuDating</span>
-          <h2>Create your account</h2>
-        </div>
-
-        <form id="signup-form" class="auth-form grid-form">
-          <label>
-            Full name
-            <input type="text" name="fullName" placeholder="Jane Doe" required />
-          </label>
-
-          <label>
-            Email
-            <input type="email" name="email" placeholder="you@example.com" required />
-          </label>
-
-          <label>
-            Age
-            <input type="number" name="age" min="18" max="80" placeholder="28" required />
-          </label>
-
-          <label>
-            Town / location
-            <input type="text" name="location" placeholder="Nairobi" required />
-          </label>
-
-          <label>
-            Looking for
-            <select name="seeking" required>
-              <option value="">Select</option>
-              <option value="older-women">Older women</option>
-              <option value="younger-men">Younger men</option>
-              <option value="both">Open to either</option>
-            </select>
-          </label>
-
-          <label>
-            Password
-            <input type="password" name="password" placeholder="Create a secure password" required />
-          </label>
-
-          <label class="full-width">
-            Short bio
-            <textarea name="bio" rows="4" placeholder="Tell people what kind of connection you want..." required></textarea>
-          </label>
-
-          <label class="full-width">
-            Hobbies
-            <input type="text" name="hobbies" placeholder="Travel, nightlife, food, music" required />
-          </label>
-
-          <label class="full-width">
-            Love language
-            <input type="text" name="loveLanguage" placeholder="Words of affirmation, quality time, gifts" required />
-          </label>
-
-          <label class="full-width">
-            Relationship goals
-            <input type="text" name="goals" placeholder="Long-term, casual fun, serious relationship" required />
-          </label>
-
-          <label class="full-width">
-            Photo links (2 required)
-            <input type="text" name="photos" placeholder="https://example.com/photo1.jpg, https://example.com/photo2.jpg" required />
-          </label>
-
-          <div class="form-note full-width">
-            By joining, you confirm you are 18+ and agree to the safety and privacy rules of TamuDating.
-          </div>
-
-          <button class="primary-btn full" type="submit">Create account</button>
-          <p class="auth-helper full-width">
-            Already a member? <a href="login.html">Login here</a>
-          </p>
-        </form>
-      </div>
-    </div>
-
-    <script src="app.js"></script>
+    <div class="auth-shell signup-shell"><div class="auth-panel form-panel wide-panel">
+      <div class="auth-head"><span class="eyebrow">Join TamuDating · Adults 18+</span><h2>Create your account</h2></div>
+      <form id="signup-form" class="auth-form grid-form">
+        <label>Full name<input type="text" name="fullName" autocomplete="name" required /></label>
+        <label>Email<input type="email" name="email" autocomplete="email" required /></label>
+        <label>Age<input type="number" name="age" min="18" max="100" required /></label>
+        <label>Town / approximate location<input type="text" name="location" required /></label>
+        <label>Looking for<select name="seeking" required><option value="">Select</option><option value="older-women">Older women</option><option value="younger-men">Younger men</option><option value="both">Open to either</option></select></label>
+        <label>Password (at least 8 characters)<input type="password" name="password" minlength="8" autocomplete="new-password" required /></label>
+        <label class="full-width">Short bio<textarea name="bio" rows="4" required></textarea></label>
+        <label class="full-width">Hobbies<input type="text" name="hobbies" required /></label>
+        <label class="full-width">Love language<input type="text" name="loveLanguage" required /></label>
+        <label class="full-width">Relationship goals<input type="text" name="goals" required /></label>
+        <label class="full-width">Two photo URLs (comma-separated)<input type="text" name="photos" placeholder="https://..., https://..." required /></label>
+        <p class="form-note full-width">You must be 18 or older. We will email you a verification link. Do not include your email, exact address, financial details, or M-Pesa PIN in your public profile.</p>
+        <button class="primary-btn full" type="submit">Create account</button>
+        <p class="auth-helper full-width">Already a member? <a href="login.html">Login here</a></p>
+      </form>
+    </div></div>
+    <script type="module" src="app.js"></script>
   </body>
 </html>

@@ -1,23 +1,31 @@
-# TamuDating manual payment setup (prototype)
+# TamuDating Firebase setup
 
-TamuDating's current website is a front-end prototype. It does not initiate STK Push, connect to Daraja, submit transaction codes to Firestore, or accept/verify live payments.
+The website is hosted separately; Firebase is used for Authentication and Cloud Firestore only. Do not configure Firebase Hosting unless you later choose it.
 
-## Intended manual Buy Goods flow
+## Project connected in code
 
-1. Admin adds the official business Till number to the public payment instructions after confirming it.
-2. Member selects the plan: KSh 1,000 one-time introduction access or KSh 3,000/month VIP.
-3. Member opens M-Pesa and chooses **Lipa na M-Pesa → Buy Goods and Services**, enters the official Till number and exact amount, and confirms payment in M-Pesa.
-4. Member submits the M-Pesa transaction code in the signed-in app.
-5. A trusted backend saves a pending payment record in Firestore. Do not store transaction codes in browser localStorage or trust a client-side approval flag.
-6. Admin signs in using the verified Firebase account `tamudating1@gmail.com`, checks the payment against the actual M-Pesa merchant statement, then approves or rejects it.
-7. Firestore rules/server logic grant messaging access only after approval for both conversation participants. A payment submission alone must never unlock messaging.
+The Firebase web app config is in `firebase-config.js`. It is public client configuration, not a private service-account credential. Restrict its API key to your production website domains in Google Cloud API key settings before launch. Never commit service-account JSON/private keys.
 
-## Before taking real payments
+## Console steps required
 
-- Configure Firebase Authentication and Firestore, then implement the transaction submission and admin-review flow securely.
-- Keep payment documents private to the submitting member and authorized admin; avoid publishing transaction codes in profile documents.
-- Validate plan and amount on trusted server logic, prevent duplicate transaction-code reuse, and retain an audit trail for decisions.
-- Show clear support, refund, and payment terms. Never ask for a user's M-Pesa PIN or password.
-- Confirm local business, privacy, tax, and consumer obligations before launch.
+1. In Firebase Console, select project `tamu-dating-3a497`.
+2. Go to **Authentication → Get started → Sign-in method**, enable **Email/Password**, and save.
+3. Go to **Firestore Database → Create database**. Choose production mode and a nearby region; region selection is difficult to change later.
+4. Open **Firestore → Rules**, paste/deploy the repository's `firestore.rules`, and publish. Review/test these rules in the Emulator Suite before production.
+5. In **Authentication → Users**, create the admin account `tamudating1@gmail.com` or sign up from the site with it. Verify the email. Admin rules require this exact verified email.
+6. Configure the authorized domains for Authentication. Add the actual website host domain when known. The default Firebase auth domain is included.
+7. On the signup page, create a test member using an email you control, verify the email from the inbox, then sign in.
 
-No Till number was supplied, so the interface currently shows a placeholder. This is a manual payment design only—no M-Pesa integration or live submission is active.
+## Current implemented pieces
+
+- Firebase Auth email/password signup/login with email-verification requirement.
+- Public profile data in `profiles/{uid}` and email in owner/admin-only `privateUsers/{uid}`.
+- Manual Buy Goods payment record submission to Firestore, pending review; no STK Push or Daraja API.
+- Admin payment list and approve/reject action for the verified admin email. Verify every transaction against the merchant statement before approval.
+- Profile discovery is only intended for profiles explicitly approved by admin. Matching and chat remain future work.
+
+## Important
+
+This configuration does not host/deploy the website. Deploy the site with your chosen provider. For ES modules/CDN Firebase SDK imports, serve it over HTTPS or localhost (not by opening the HTML file directly). The payment Till is not configured in the website yet. Keep real payment submissions disabled until the Till is confirmed and the payment flow has been tested with Firebase rules.
+
+When approving a transaction, the admin UI updates the payment status and the member's `messagingApproved` flag. The Firestore rules prevent members from changing approval flags. App testing is still needed before accepting real payments.
