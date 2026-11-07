@@ -1,69 +1,347 @@
-/* Tamu Dating poster-inspired landing page and required image upload field */
-.home-page { background: #fff8f8; color: #4a2032; }
-.home-page .topbar { position: relative; z-index: 2; background: rgba(255, 249, 249, .96); border-bottom: 1px solid rgba(184,137,54,.22); }
-.home-page .nav { min-height: 76px; display: flex; align-items: center; justify-content: space-between; gap: 24px; }
-.home-page .brand { display: inline-flex; align-items: center; gap: 10px; color: #8d294b; font-size: 1.45rem; font-weight: 800; white-space: nowrap; }
-.home-page .brand-mark { flex: 0 0 38px; width: 38px; height: 38px; }
-.home-page .nav-links, .home-page .nav-actions { display: flex; align-items: center; gap: 22px; }
-.home-page .nav-links a, .home-page .link-btn { color: #64283f; font-weight: 700; }
-.home-page .nav-actions { gap: 16px; }
-.home-page .primary-btn { display: inline-flex; align-items: center; justify-content: center; background: linear-gradient(135deg,#d83b78,#f16aa0); color: white; box-shadow: 0 10px 24px rgba(170,52,98,.2); }
-.home-page .footer { padding: 28px 0; background: #fffaf8; border-top: 1px solid rgba(61,29,56,.08); }
-.poster-hero {
-  padding: 46px 0 58px;
-  background: radial-gradient(ellipse at 50% 20%, #fff8db 0, transparent 39%), linear-gradient(135deg, #f8d3d9, #f9e3d4 52%, #eebbc8);
+:root {
+  --rose-1: #f9dfe6;
+  --rose-2: #f7d4dc;
+  --rose-3: #efd5de;
+  --gold-1: #e5c88c;
+  --gold-2: #c8913c;
+  --rose-deep: #a62d53;
+  --brown-1: #7e401e;
+  --brown-2: #56311f;
+  --text-dark: #2c1b2e;
+  --white-soft: #fffaf5;
 }
-.poster-frame {
+
+body.home-page {
+  margin: 0;
+  color: var(--text-dark);
+  background: linear-gradient(180deg, #f5dfe5 0%, #fef4f4 100%);
+  font-family: 'Manrope', sans-serif;
+}
+
+.topbar-home {
+  background: rgba(255, 249, 250, 0.7);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(108, 62, 68, 0.08);
+}
+
+.topbar-home .nav {
+  min-height: 72px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+}
+
+.brand-group {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  color: #7e294a;
+  font-weight: 800;
+  font-size: 1.2rem;
+}
+
+.brand-mark {
+  display: inline-grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #ef4f8a, #c6305c);
+  color: white;
+  font-size: 0.95rem;
+  box-shadow: 0 6px 18px rgba(202, 56, 102, 0.25);
+}
+
+.nav-links,
+.nav-actions,
+.footer-actions {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.nav-links a,
+.footer-actions a,
+.link-btn {
+  color: #6a2f42;
+  text-decoration: none;
+  font-weight: 700;
+}
+
+.home-page .primary-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.9rem 1.5rem;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #e74f8c, #ed7aaa);
+  color: white;
+  border: none;
+  font-weight: 800;
+  box-shadow: 0 12px 24px rgba(206, 84, 135, 0.22);
+  text-decoration: none;
+}
+
+.main-homepage {
+  overflow: hidden;
+}
+
+.poster-section {
+  padding: 24px 0 34px;
+  background: linear-gradient(180deg, #f5dfe5 0%, #f5dfe5 100%);
+}
+
+.poster-shell {
   position: relative;
-  max-width: 1040px;
-  padding: clamp(24px, 5vw, 58px);
+  width: min(1180px, calc(100% - 30px));
+  margin: 0 auto;
+  padding: clamp(18px, 4vw, 52px) clamp(16px, 3vw, 32px) 28px;
+  border: 3px solid rgba(164, 103, 42, 0.9);
+  border-radius: 18px;
+  background: linear-gradient(180deg, rgba(255, 248, 244, 0.14), rgba(255, 255, 255, 0.06));
+  box-shadow: inset 0 0 0 10px rgba(190, 133, 55, 0.22);
   text-align: center;
-  border: 1px solid rgba(184, 137, 54, .75);
-  outline: 1px solid rgba(184, 137, 54, .32);
-  outline-offset: -9px;
-  border-radius: 12px;
-  box-shadow: 0 24px 70px rgba(104, 35, 62, .16);
-  background: linear-gradient(160deg, rgba(255, 248, 238, .62), rgba(255,255,255,.25));
+  background: linear-gradient(180deg, rgba(255, 235, 240, 0.55), rgba(255, 222, 228, 0.4));
 }
-.poster-sparkle { color: #ad7a28; letter-spacing: .8em; margin-bottom: 12px; }
-.poster-location { margin: 0; color: #982a50; font-size: clamp(.85rem, 2vw, 1.15rem); font-weight: 800; letter-spacing: .12em; text-transform: uppercase; }
-.poster-location span { color: #c49a46; padding: 0 .4em; }
-.poster-frame h1 { margin: 4px 0 0; color: #8f5924; font-family: 'DM Serif Display', Georgia, serif; font-size: clamp(3.2rem, 10vw, 7rem); line-height: 1; text-shadow: 0 3px 0 #f6e5ad, 0 9px 22px rgba(111, 58, 31, .22); }
-.poster-script { margin: 12px 0 24px; color: #a6365b; font-family: Georgia, serif; font-size: clamp(1.3rem, 4vw, 2.4rem); font-style: italic; }
-.poster-photo { position: relative; width: min(100%, 790px); height: clamp(280px, 48vw, 520px); margin: 0 auto; overflow: hidden; border: 7px solid #fff9ee; border-radius: 5px; box-shadow: 0 12px 32px rgba(66, 35, 32, .24); background: linear-gradient(0deg, rgba(51, 35, 31, .22), transparent 40%), url('https://images.unsplash.com/photo-1516589178581-6cd7833ae3b2?auto=format&fit=crop&w=1400&q=85') center 43%/cover, linear-gradient(135deg,#d9a788,#f4d2b6); }
-.poster-photo-overlay { position: absolute; inset: auto 0 0; padding: 16px; color: white; font-size: .75rem; font-weight: 800; letter-spacing: .18em; background: linear-gradient(transparent, rgba(42, 29, 27, .58)); }
-.poster-tagline { margin: 23px 0 8px; color: #fff6cf; font-family: 'DM Serif Display', Georgia, serif; font-size: clamp(1.55rem, 4.2vw, 2.8rem); text-shadow: 0 2px 6px #7f2943; }
-.poster-tagline span { color: #f0c75d; }
-.poster-trust, .poster-values { margin: 10px 0; color: #8b294c; font-weight: 800; letter-spacing: .04em; }
-.poster-trust i { color: #c69738; font-style: normal; padding: 0 .35em; }
-.poster-values { color: #704125; font-weight: 700; }
-.poster-values b { color: #b98934; padding: 0 .3em; }
-.poster-cta { display: inline-flex; gap: 12px; align-items: center; margin-top: 16px; padding: 1rem 1.7rem; }
-.home-about { padding: 64px 0; background: #fffaf8; }
-.home-about-inner { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; align-items: center; }
-.home-about h2 { margin: 0; color: #64283f; font-family: 'DM Serif Display', Georgia, serif; font-size: clamp(2rem, 4vw, 3.2rem); }
-.home-about-inner > p { color: #685b6d; line-height: 1.8; }
-.home-values { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
-.home-values article { padding: 26px; border: 1px solid rgba(61,29,56,.08); border-radius: 20px; background: white; }
-.home-values h3 { color: #64283f; }
-.home-values p { color: #685b6d; line-height: 1.7; }
-.value-icon { display: inline-grid; place-items: center; width: 44px; height: 44px; border-radius: 50%; color: #9c3156; background: #fae3eb; font-weight: 800; }
-.footer-inner > div:last-child { display: flex; gap: 20px; }
-.signup-brand { margin-bottom: 26px; }
-.photo-upload-label input[type="file"] { padding: .65rem; background: #fff9fb; }
-.upload-help { color: #685b6d; font-size: .85rem; font-weight: 500; line-height: 1.5; }
-@media (max-width: 700px) {
-  .home-page .nav { flex-wrap: wrap; padding-top: 12px; padding-bottom: 12px; }
-  .home-page .nav-links { order: 3; width: 100%; justify-content: center; gap: 24px; }
-  .home-page .nav-actions { margin-left: auto; gap: 12px; }
-  .home-about-inner, .home-values { grid-template-columns: 1fr; }
-  .poster-hero { padding: 24px 0 36px; }
-  .poster-frame { width: calc(100% - 24px); }
-  .poster-trust { line-height: 1.8; }
+
+.poster-shell::before,
+.poster-shell::after {
+  content: "";
+  position: absolute;
+  inset: 14px;
+  border: 2px solid rgba(168, 118, 64, 0.5);
+  border-radius: 14px;
+  pointer-events: none;
 }
+
+.poster-shell::after {
+  inset: 28px 24px;
+  border-color: rgba(168, 118, 64, 0.2);
+}
+
+.poster-title-wrap {
+  position: relative;
+  z-index: 1;
+}
+
+.poster-gold-title {
+  font-family: 'DM Serif Display', Georgia, serif;
+  font-weight: 400;
+  font-size: clamp(4rem, 9vw, 10rem);
+  line-height: 0.95;
+  letter-spacing: -0.04em;
+  color: #a5682b;
+  text-shadow: 0 2px 0 #efdca2, 0 10px 24px rgba(127, 78, 30, 0.14);
+}
+
+.poster-script {
+  margin-top: 12px;
+  font-size: clamp(1.35rem, 2vw, 2.8rem);
+  font-family: Georgia, serif;
+  font-style: italic;
+  color: #a63a66;
+  font-weight: 700;
+}
+
+.poster-couple-photo {
+  position: relative;
+  z-index: 1;
+  width: min(92%, 820px);
+  height: clamp(330px, 49vw, 630px);
+  margin: 26px auto 0;
+  border: 8px solid rgba(255, 249, 242, 0.98);
+  border-radius: 10px;
+  box-shadow: 0 16px 34px rgba(69, 42, 52, 0.18);
+  background:
+    linear-gradient(180deg, rgba(255, 240, 200, 0.12), rgba(0, 0, 0, 0.06)),
+    url('https://images.unsplash.com/photo-1516589178581-6cd7833ae3b2?auto=format&fit=crop&w=1400&q=85') center/cover no-repeat;
+}
+
+.poster-lower-banner {
+  position: relative;
+  z-index: 1;
+  margin: 28px auto 12px;
+  width: min(100%, 900px);
+  padding: 0.95rem 1.6rem;
+  border-radius: 10px;
+  background: linear-gradient(90deg, rgba(211, 129, 89, 0.2), rgba(219, 88, 121, 0.3), rgba(200, 117, 77, 0.2));
+  border: 1px solid rgba(126, 60, 48, 0.25);
+  color: #fffaf0;
+  font-size: clamp(1.6rem, 3vw, 3rem);
+  font-weight: 800;
+  line-height: 1.2;
+  letter-spacing: -0.04em;
+  text-shadow: 0 2px 8px rgba(92, 54, 36, 0.3);
+}
+
+.poster-meta-row {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 14px 28px;
+  padding: 18px 24px 8px;
+  font-size: clamp(0.8rem, 1.2vw, 1.2rem);
+  font-weight: 800;
+  color: #7a2d48;
+}
+
+.poster-bottom-line {
+  position: relative;
+  z-index: 1;
+  margin-top: 8px;
+  font-size: clamp(1rem, 1.8vw, 1.65rem);
+  color: #7a2d48;
+  font-weight: 800;
+}
+
+.poster-join {
+  position: relative;
+  z-index: 1;
+  display: inline-flex;
+  margin-top: 18px;
+  padding: 1rem 1.8rem;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #ee5a91, #e86398);
+  color: white;
+  text-decoration: none;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  box-shadow: 0 12px 26px rgba(209, 85, 132, 0.24);
+}
+
+.home-about {
+  background: #fffaf8;
+  padding: 62px 0 52px;
+}
+
+.home-about-inner {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 36px;
+  align-items: center;
+}
+
+.home-about h2 {
+  margin: 0;
+  font-family: 'DM Serif Display', Georgia, serif;
+  font-size: clamp(2.2rem, 4vw, 3.4rem);
+  color: #3b1e2d;
+  line-height: 1.1;
+}
+
+.home-about p {
+  margin: 0;
+  color: #5e4455;
+  font-size: 1.08rem;
+  line-height: 1.8;
+}
+
+.home-values-section {
+  background: #fff7f9;
+  padding: 0 0 64px;
+}
+
+.home-values {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 20px;
+}
+
+.home-values article {
+  background: white;
+  border: 1px solid rgba(66, 33, 44, 0.08);
+  border-radius: 22px;
+  padding: 24px 22px;
+  box-shadow: 0 16px 32px rgba(84, 42, 56, 0.04);
+}
+
+.home-values h3 {
+  margin: 18px 0 8px;
+  color: #4f1d2c;
+}
+
+.home-values p {
+  margin: 0;
+  color: #665763;
+  line-height: 1.7;
+}
+
+.value-icon {
+  display: inline-grid;
+  place-items: center;
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  background: #fbe8ef;
+  color: #aa3158;
+  font-weight: 800;
+}
+
+.home-footer {
+  background: #fffaf8;
+  border-top: 1px solid rgba(70, 42, 48, 0.1);
+}
+
+.footer-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  padding: 24px 0;
+}
+
+.footer-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 800;
+  color: #7e294a;
+}
+
+.footer-inner p {
+  margin: 6px 0 0;
+  color: #7a6170;
+}
+
+@media (max-width: 900px) {
+  .home-about-inner,
+  .home-values {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 720px) {
+  .topbar-home .nav,
+  .footer-inner {
+    flex-wrap: wrap;
+  }
+
+  .nav-links,
+  .nav-actions,
+  .footer-actions {
+    gap: 10px 16px;
+    flex-wrap: wrap;
+  }
+
+  .poster-lower-banner {
+    font-size: clamp(1.4rem, 7vw, 2.3rem);
+  }
+
+  .poster-meta-row {
+    gap: 10px 18px;
+  }
+}
+
 @media (max-width: 440px) {
-  .home-page .nav-links { justify-content: flex-start; }
-  .home-page .nav-actions .primary-btn { padding: .75rem 1rem; }
-  .poster-sparkle { letter-spacing: .35em; }
-  .poster-photo { height: 300px; }
+  .poster-couple-photo {
+    width: 100%;
+    height: 290px;
+  }
+
+  .poster-gold-title {
+    font-size: 3.3rem;
+  }
 }
