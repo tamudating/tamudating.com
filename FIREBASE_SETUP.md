@@ -4,9 +4,9 @@ The website is hosted separately; Firebase is used for Authentication and Cloud 
 
 ## Security update and required deployment steps
 
-The updated `firestore.rules` requires a verified Firebase Authentication email for profile and payment access. Members can read their own profile and approved profiles; the verified admin can review all profiles and payments. Member edits are limited to unapproved profiles; profile content becomes locked after admin approval so profile edits cannot silently bypass review. To change an approved profile, the admin must edit or remove approval first.
+The current rules now allow a new member to create a profile before email verification, which avoids the signup conflict. Once the member verifies their email, Firebase denies access to unapproved or other users' profile data unless they are the owner or the admin. This keeps discovery limited to approved profiles. The admin account remains `tamudating1@gmail.com` and must be verified in Firebase.
 
-After pulling the latest repository version, publish the full `firestore.rules` file in Firebase Console under **Firestore Database → Rules**. Rules in GitHub do not automatically update Firebase. Test signup, profile approval, discovery, payment submission, and admin review with separate test accounts before launch.
+After pulling the latest repository version, publish the full `firestore.rules` file in Firebase Console under **Firestore Database → Rules**. Rules in GitHub do not automatically update Firebase. Test signup, profile approval, discovery, payment submission, and admin review with separate member/admin accounts before launch.
 
 ## Admin approval workflow
 

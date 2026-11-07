@@ -15,14 +15,13 @@ service cloud.firestore {
     }
 
     function owns(uid) {
-      return verifiedUser() && request.auth.uid == uid;
+      return signedIn() && request.auth.uid == uid;
     }
 
     function validProfile(data) {
       return data.keys().hasOnly([
           'displayName', 'age', 'location', 'seeking', 'bio', 'hobbies',
-          'loveLanguage', 'relationshipGoal', 'photoUrls', 'createdAt',
-          'profileApproved', 'messagingApproved', 'approvedAt'
+          'loveLanguage', 'relationshipGoal', 'photoUrls', 'createdAt'
         ])
         && data.displayName is string
         && data.age is int
@@ -45,10 +44,9 @@ service cloud.firestore {
     }
 
     match /profiles/{uid} {
-      // Profile documents contain only fields intended for other signed-in, verified members.
-      // Users can read their own unapproved profile; admins can review all profiles.
-      allow read: if verifiedUser()
-        && (owns(uid) || isAdmin() || resource.data.profileApproved == true);
+      allow read: if isAdmin()
+        || owns(uid)
+        || (verifiedUser() && resource.data.profileApproved == true);
 
       allow create: if owns(uid)
         && validProfile(request.resource.data)
@@ -57,8 +55,6 @@ service cloud.firestore {
         && !('messagingApproved' in request.resource.data)
         && !('approvedAt' in request.resource.data);
 
-      // Once a profile is approved, members cannot alter it themselves. Admins can update
-      // profile content and approval fields. Unapproved owners can edit only profile fields.
       allow update: if isAdmin()
         || (owns(uid)
           && resource.data.profileApproved != true
@@ -76,10 +72,10 @@ service cloud.firestore {
     }
 
     match /payments/{paymentId} {
-      allow read: if isAdmin()
-        || (owns(resource.data.uid));
+      allow read: if isAdmin() || (verifiedUser() && resource.data.uid == request.auth.uid);
 
-      allow create: if owns(request.resource.data.uid)
+      allow create: if verifiedUser()
+        && request.resource.data.uid == request.auth.uid
         && request.resource.data.status == 'pending'
         && request.resource.data.plan in ['intro', 'vip']
         && ((request.resource.data.plan == 'intro' && request.resource.data.amountKsh == 1000)
@@ -152,12 +148,9 @@ service cloud.firestore {
     }
 
     match /blocks/{blockId} {
-      allow read: if verifiedUser()
-        && resource.data.ownerUid == request.auth.uid;
-      allow create: if verifiedUser()
-        && request.resource.data.ownerUid == request.auth.uid;
-      allow delete: if verifiedUser()
-        && resource.data.ownerUid == request.auth.uid;
+      allow read: if verifiedUser() && resource.data.ownerUid == request.auth.uid;
+      allow create: if verifiedUser() && request.resource.data.ownerUid == request.auth.uid;
+      allow delete: if verifiedUser() && resource.data.ownerUid == request.auth.uid;
       allow update: if false;
     }
   }
