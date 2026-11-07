@@ -1,0 +1,11 @@
+# Files containing secrets or local-only configuration must never be committed.
+.env
+.env.*
+!.env.example
+*service-account*.json
+*serviceAccount*.json
+firebase-adminsdk-*.json
+*.pem
+*.key
+node_modules/
+.DS_Store

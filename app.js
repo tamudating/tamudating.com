@@ -12,7 +12,9 @@ import {
   doc,
   getDoc,
   getDocs,
+  query,
   serverTimestamp,
+  where,
   writeBatch
 } from 'https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js';
 
@@ -61,8 +63,8 @@ async function handleSignup(form) {
     showMessage(form, 'You must be at least 18 years old to create an account.', true);
     return;
   }
-  if (photos.length < 2) {
-    showMessage(form, 'Please provide two valid photo links beginning with https://.', true);
+  if (photos.length < 2 || photos.length > 6) {
+    showMessage(form, 'Please provide between two and six valid photo links beginning with https://.', true);
     return;
   }
   if (String(data.password || '').length < 8) {
@@ -79,7 +81,7 @@ async function handleSignup(form) {
       displayName: String(data.fullName).trim(),
       age,
       location: String(data.location).trim(),
-      seeking: data.seeking,
+      seeking: String(data.seeking || ''),
       bio: String(data.bio).trim(),
       hobbies: String(data.hobbies).trim(),
       loveLanguage: String(data.loveLanguage).trim(),
@@ -140,9 +142,9 @@ async function loadDashboard(user) {
   if (title) title.textContent = `Welcome, ${user.displayName || user.email || 'member'}`;
   const status = $('#member-status');
   try {
-    const [profileSnap, allProfiles] = await Promise.all([
+    const [profileSnap, approvedProfiles] = await Promise.all([
       getDoc(doc(db, 'profiles', user.uid)),
-      getDocs(collection(db, 'profiles'))
+      getDocs(query(collection(db, 'profiles'), where('profileApproved', '==', true)))
     ]);
     const profile = profileSnap.data() || {};
     const profileApproved = profile.profileApproved === true;
@@ -157,8 +159,8 @@ async function loadDashboard(user) {
     }
     const grid = $('#discover-grid');
     if (grid) {
-      const profiles = allProfiles.docs
-        .filter((item) => item.id !== user.uid && item.data().profileApproved === true)
+      const profiles = approvedProfiles.docs
+        .filter((item) => item.id !== user.uid)
         .map((item) => item.data());
       grid.innerHTML = profiles.length ? profiles.map(renderProfileCard).join('') : '<p>No other approved profiles are available yet.</p>';
     }

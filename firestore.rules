@@ -5,14 +5,37 @@ service cloud.firestore {
       return request.auth != null;
     }
 
+    function verifiedUser() {
+      return signedIn() && request.auth.token.email_verified == true;
+    }
+
     function isAdmin() {
-      return signedIn()
-        && request.auth.token.email == 'tamudating1@gmail.com'
-        && request.auth.token.email_verified == true;
+      return verifiedUser()
+        && request.auth.token.email == 'tamudating1@gmail.com';
     }
 
     function owns(uid) {
-      return signedIn() && request.auth.uid == uid;
+      return verifiedUser() && request.auth.uid == uid;
+    }
+
+    function validProfile(data) {
+      return data.keys().hasOnly([
+          'displayName', 'age', 'location', 'seeking', 'bio', 'hobbies',
+          'loveLanguage', 'relationshipGoal', 'photoUrls', 'createdAt',
+          'profileApproved', 'messagingApproved', 'approvedAt'
+        ])
+        && data.displayName is string
+        && data.age is int
+        && data.age >= 18
+        && data.location is string
+        && data.seeking is string
+        && data.bio is string
+        && data.hobbies is string
+        && data.loveLanguage is string
+        && data.relationshipGoal is string
+        && data.photoUrls is list
+        && data.photoUrls.size() >= 2
+        && data.photoUrls.size() <= 6;
     }
 
     function canMessage(uid) {
@@ -22,22 +45,29 @@ service cloud.firestore {
     }
 
     match /profiles/{uid} {
-      // Only public dating profile fields belong here. Private account data is separate.
-      allow read: if signedIn();
+      // Profile documents contain only fields intended for other signed-in, verified members.
+      // Users can read their own unapproved profile; admins can review all profiles.
+      allow read: if verifiedUser()
+        && (owns(uid) || isAdmin() || resource.data.profileApproved == true);
+
       allow create: if owns(uid)
-        && request.resource.data.age is int
-        && request.resource.data.age >= 18
-        && request.resource.data.photoUrls is list
-        && request.resource.data.photoUrls.size() >= 2
-        && !('messagingApproved' in request.resource.data)
+        && validProfile(request.resource.data)
+        && request.resource.data.createdAt == request.time
         && !('profileApproved' in request.resource.data)
-        && !('verified' in request.resource.data)
-        && !('admin' in request.resource.data)
-        && !('email' in request.resource.data);
-      allow update: if (owns(uid)
-          && !request.resource.data.diff(resource.data).affectedKeys()
-            .hasAny(['messagingApproved', 'profileApproved', 'verified', 'admin', 'email']))
-        || isAdmin();
+        && !('messagingApproved' in request.resource.data)
+        && !('approvedAt' in request.resource.data);
+
+      // Once a profile is approved, members cannot alter it themselves. Admins can update
+      // profile content and approval fields. Unapproved owners can edit only profile fields.
+      allow update: if isAdmin()
+        || (owns(uid)
+          && resource.data.profileApproved != true
+          && validProfile(request.resource.data)
+          && request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+            'displayName', 'age', 'location', 'seeking', 'bio', 'hobbies',
+            'loveLanguage', 'relationshipGoal', 'photoUrls'
+          ]));
+
       allow delete: if owns(uid) || isAdmin();
     }
 
@@ -47,9 +77,9 @@ service cloud.firestore {
 
     match /payments/{paymentId} {
       allow read: if isAdmin()
-        || (signedIn() && resource.data.uid == request.auth.uid);
-      allow create: if signedIn()
-        && request.resource.data.uid == request.auth.uid
+        || (owns(resource.data.uid));
+
+      allow create: if owns(request.resource.data.uid)
         && request.resource.data.status == 'pending'
         && request.resource.data.plan in ['intro', 'vip']
         && ((request.resource.data.plan == 'intro' && request.resource.data.amountKsh == 1000)
@@ -58,22 +88,28 @@ service cloud.firestore {
         && request.resource.data.transactionCode.size() >= 6
         && request.resource.data.transactionCode.size() <= 20
         && request.resource.data.createdAt == request.time
-        && request.resource.data.keys().hasOnly(['uid', 'transactionCode', 'plan', 'amountKsh', 'status', 'createdAt']);
+        && request.resource.data.keys().hasOnly([
+          'uid', 'transactionCode', 'plan', 'amountKsh', 'status', 'createdAt'
+        ]);
+
       allow update, delete: if isAdmin();
     }
 
     match /conversations/{conversationId} {
       function isMember() {
-        return signedIn() && request.auth.uid in resource.data.memberUids;
+        return verifiedUser() && request.auth.uid in resource.data.memberUids;
       }
+
       function bothMembersApproved(data) {
         return data.memberUids is list
           && data.memberUids.size() == 2
+          && data.memberUids[0] != data.memberUids[1]
           && canMessage(data.memberUids[0])
           && canMessage(data.memberUids[1]);
       }
+
       allow read: if isAdmin() || isMember();
-      allow create: if signedIn()
+      allow create: if verifiedUser()
         && request.resource.data.memberUids is list
         && request.resource.data.memberUids.size() == 2
         && request.auth.uid in request.resource.data.memberUids
@@ -87,34 +123,41 @@ service cloud.firestore {
         function parentConversation() {
           return get(/databases/$(database)/documents/conversations/$(conversationId)).data;
         }
+
         function approvedConversationMembers() {
-          return signedIn()
+          return verifiedUser()
             && request.auth.uid in parentConversation().memberUids
             && parentConversation().memberUids.size() == 2
             && canMessage(parentConversation().memberUids[0])
             && canMessage(parentConversation().memberUids[1]);
         }
+
         allow read: if isAdmin() || approvedConversationMembers();
         allow create: if approvedConversationMembers()
           && request.resource.data.senderUid == request.auth.uid
           && request.resource.data.text is string
           && request.resource.data.text.size() > 0
           && request.resource.data.text.size() <= 4000
+          && request.resource.data.createdAt == request.time
           && request.resource.data.keys().hasOnly(['senderUid', 'text', 'createdAt']);
         allow update, delete: if isAdmin();
       }
     }
 
     match /reports/{reportId} {
-      allow create: if signedIn()
+      allow create: if verifiedUser()
         && request.resource.data.reporterUid == request.auth.uid
         && request.resource.data.status == 'open';
       allow read, update, delete: if isAdmin();
     }
 
     match /blocks/{blockId} {
-      allow read, create, delete: if signedIn()
+      allow read: if verifiedUser()
+        && resource.data.ownerUid == request.auth.uid;
+      allow create: if verifiedUser()
         && request.resource.data.ownerUid == request.auth.uid;
+      allow delete: if verifiedUser()
+        && resource.data.ownerUid == request.auth.uid;
       allow update: if false;
     }
   }
