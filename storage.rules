@@ -1,0 +1,21 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+    function signedIn() { return request.auth != null; }
+    function verifiedUser() { return signedIn() && request.auth.token.email_verified == true; }
+    function isAdmin() { return verifiedUser() && request.auth.token.email == 'tamudating1@gmail.com'; }
+    function owns(uid) { return signedIn() && request.auth.uid == uid; }
+    function approvedProfile(uid) {
+      return firestore.exists(/databases/(default)/documents/profiles/$(uid))
+        && firestore.get(/databases/(default)/documents/profiles/$(uid)).data.profileApproved == true;
+    }
+
+    match /profiles/{uid}/{fileName} {
+      allow read: if isAdmin() || owns(uid) || (verifiedUser() && approvedProfile(uid));
+      allow create, update: if owns(uid)
+        && request.resource.size <= 5 * 1024 * 1024
+        && request.resource.contentType.matches('image/(jpeg|png|webp)');
+      allow delete: if owns(uid) || isAdmin();
+    }
+  }
+}

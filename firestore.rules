@@ -1,40 +1,23 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    function signedIn() {
-      return request.auth != null;
-    }
-
-    function verifiedUser() {
-      return signedIn() && request.auth.token.email_verified == true;
-    }
-
-    function isAdmin() {
-      return verifiedUser()
-        && request.auth.token.email == 'tamudating1@gmail.com';
-    }
-
-    function owns(uid) {
-      return signedIn() && request.auth.uid == uid;
-    }
+    function signedIn() { return request.auth != null; }
+    function verifiedUser() { return signedIn() && request.auth.token.email_verified == true; }
+    function isAdmin() { return verifiedUser() && request.auth.token.email == 'tamudating1@gmail.com'; }
+    function owns(uid) { return signedIn() && request.auth.uid == uid; }
 
     function validProfile(data) {
       return data.keys().hasOnly([
           'displayName', 'age', 'location', 'seeking', 'bio', 'hobbies',
-          'loveLanguage', 'relationshipGoal', 'photoUrls', 'createdAt'
+          'loveLanguage', 'relationshipGoal', 'photoUrls', 'createdAt',
+          'profileApproved', 'messagingApproved', 'approvedAt'
         ])
         && data.displayName is string
-        && data.age is int
-        && data.age >= 18
-        && data.location is string
-        && data.seeking is string
-        && data.bio is string
-        && data.hobbies is string
-        && data.loveLanguage is string
-        && data.relationshipGoal is string
-        && data.photoUrls is list
-        && data.photoUrls.size() >= 2
-        && data.photoUrls.size() <= 6;
+        && data.age is int && data.age >= 18
+        && data.location is string && data.seeking is string
+        && data.bio is string && data.hobbies is string
+        && data.loveLanguage is string && data.relationshipGoal is string
+        && data.photoUrls is list && data.photoUrls.size() >= 1 && data.photoUrls.size() <= 6;
     }
 
     function canMessage(uid) {
@@ -44,26 +27,20 @@ service cloud.firestore {
     }
 
     match /profiles/{uid} {
-      allow read: if isAdmin()
-        || owns(uid)
-        || (verifiedUser() && resource.data.profileApproved == true);
-
+      allow read: if isAdmin() || owns(uid) || (verifiedUser() && resource.data.profileApproved == true);
       allow create: if owns(uid)
         && validProfile(request.resource.data)
         && request.resource.data.createdAt == request.time
         && !('profileApproved' in request.resource.data)
         && !('messagingApproved' in request.resource.data)
         && !('approvedAt' in request.resource.data);
-
-      allow update: if isAdmin()
-        || (owns(uid)
-          && resource.data.profileApproved != true
-          && validProfile(request.resource.data)
-          && request.resource.data.diff(resource.data).affectedKeys().hasOnly([
-            'displayName', 'age', 'location', 'seeking', 'bio', 'hobbies',
-            'loveLanguage', 'relationshipGoal', 'photoUrls'
-          ]));
-
+      allow update: if isAdmin() || (owns(uid)
+        && resource.data.profileApproved != true
+        && validProfile(request.resource.data)
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+          'displayName', 'age', 'location', 'seeking', 'bio', 'hobbies',
+          'loveLanguage', 'relationshipGoal', 'photoUrls'
+        ]));
       allow delete: if owns(uid) || isAdmin();
     }
 
@@ -73,7 +50,6 @@ service cloud.firestore {
 
     match /payments/{paymentId} {
       allow read: if isAdmin() || (verifiedUser() && resource.data.uid == request.auth.uid);
-
       allow create: if verifiedUser()
         && request.resource.data.uid == request.auth.uid
         && request.resource.data.status == 'pending'
@@ -84,26 +60,17 @@ service cloud.firestore {
         && request.resource.data.transactionCode.size() >= 6
         && request.resource.data.transactionCode.size() <= 20
         && request.resource.data.createdAt == request.time
-        && request.resource.data.keys().hasOnly([
-          'uid', 'transactionCode', 'plan', 'amountKsh', 'status', 'createdAt'
-        ]);
-
+        && request.resource.data.keys().hasOnly(['uid', 'transactionCode', 'plan', 'amountKsh', 'status', 'createdAt']);
       allow update, delete: if isAdmin();
     }
 
     match /conversations/{conversationId} {
-      function isMember() {
-        return verifiedUser() && request.auth.uid in resource.data.memberUids;
-      }
-
+      function isMember() { return verifiedUser() && request.auth.uid in resource.data.memberUids; }
       function bothMembersApproved(data) {
-        return data.memberUids is list
-          && data.memberUids.size() == 2
+        return data.memberUids is list && data.memberUids.size() == 2
           && data.memberUids[0] != data.memberUids[1]
-          && canMessage(data.memberUids[0])
-          && canMessage(data.memberUids[1]);
+          && canMessage(data.memberUids[0]) && canMessage(data.memberUids[1]);
       }
-
       allow read: if isAdmin() || isMember();
       allow create: if verifiedUser()
         && request.resource.data.memberUids is list
@@ -116,10 +83,7 @@ service cloud.firestore {
       allow delete: if isAdmin();
 
       match /messages/{messageId} {
-        function parentConversation() {
-          return get(/databases/$(database)/documents/conversations/$(conversationId)).data;
-        }
-
+        function parentConversation() { return get(/databases/$(database)/documents/conversations/$(conversationId)).data; }
         function approvedConversationMembers() {
           return verifiedUser()
             && request.auth.uid in parentConversation().memberUids
@@ -127,7 +91,6 @@ service cloud.firestore {
             && canMessage(parentConversation().memberUids[0])
             && canMessage(parentConversation().memberUids[1]);
         }
-
         allow read: if isAdmin() || approvedConversationMembers();
         allow create: if approvedConversationMembers()
           && request.resource.data.senderUid == request.auth.uid
