@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Login | TamuDating</title>
+    <meta name="description" content="Sign in to TamuDating and continue your journey." />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body class="auth-page">
+    <div class="auth-shell">
+      <div class="auth-panel promo-panel">
+        <div class="brand auth-brand">
+          <span class="brand-mark">♥</span>
+          <span>TamuDating</span>
+        </div>
+        <h1>Meet adults who match your energy.</h1>
+        <p>Adults only. Safer conversations. Genuine chemistry.</p>
+        <ul>
+          <li>Verified profiles</li>
+          <li>Approved payment before chat</li>
+          <li>Local profile matching</li>
+        </ul>
+      </div>
+
+      <div class="auth-panel form-panel">
+        <div class="auth-head">
+          <span class="eyebrow">Welcome back</span>
+          <h2>Login</h2>
+        </div>
+
+        <form id="login-form" class="auth-form">
+          <label>
+            Email
+            <input type="email" name="email" placeholder="you@example.com" required />
+          </label>
+
+          <label>
+            Password
+            <input type="password" name="password" placeholder="••••••••" required />
+          </label>
+
+          <button class="primary-btn full" type="submit">Login</button>
+          <p class="auth-helper">
+            No account yet?
+            <a href="signup.html">Create one</a>
+          </p>
+        </form>
+      </div>
+    </div>
+
+    <script src="app.js"></script>
+  </body>
+</html>

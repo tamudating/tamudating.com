@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dashboard | TamuDating</title>
+    <meta name="description" content="TamuDating dashboard for profile browsing, payments, and messaging." />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body class="dashboard-body">
+    <div class="dashboard-shell">
+      <aside class="sidebar">
+        <div class="brand sidebar-brand">
+          <span class="brand-mark">♥</span>
+          <span>TamuDating</span>
+        </div>
+
+        <nav class="sidebar-nav">
+          <a href="#discover" class="active">Discover</a>
+          <a href="#matches">Matches</a>
+          <a href="#inbox">Inbox</a>
+          <a href="#profile">My profile</a>
+          <a href="#payments">Payments</a>
+          <a href="#admin">Admin</a>
+        </nav>
+
+        <button class="secondary-btn full logout-btn">Logout</button>
+      </aside>
+
+      <main class="dashboard-main">
+        <header class="dashboard-topbar">
+          <div>
+            <span class="eyebrow">Welcome back</span>
+            <h1 id="dashboard-title">Your dashboard</h1>
+          </div>
+
+          <div class="profile-chip">
+            <span class="status-dot"></span>
+            <span id="member-status">Approval pending</span>
+          </div>
+        </header>
+
+        <section id="discover" class="panel-section">
+          <div class="section-heading-row">
+            <h2>Discover nearby</h2>
+            <button class="primary-btn small">Refresh</button>
+          </div>
+
+          <div id="discover-grid" class="profile-grid"></div>
+        </section>
+
+        <section id="matches" class="panel-section">
+          <div class="section-heading-row">
+            <h2>Matches</h2>
+          </div>
+
+          <div id="matches-list" class="matches-list"></div>
+        </section>
+
+        <section id="inbox" class="panel-section">
+          <div class="section-heading-row">
+            <h2>Inbox</h2>
+          </div>
+
+          <div class="inbox-layout">
+            <aside id="chat-list" class="chat-list"></aside>
+            <div id="chat-box" class="chat-box">
+              <div class="empty-chat">Select a conversation to continue the chat.</div>
+            </div>
+          </div>
+        </section>
+
+        <section id="profile" class="panel-section">
+          <div class="section-heading-row">
+            <h2>My profile</h2>
+          </div>
+
+          <div id="profile-summary" class="profile-summary"></div>
+        </section>
+
+        <section id="payments" class="panel-section">
+          <div class="section-heading-row">
+            <h2>Payments</h2>
+          </div>
+
+          <div class="payment-card">
+            <h3>One-time payment: KSh 1,000</h3>
+            <p>Pay via M-Pesa and submit your transaction code for admin review.</p>
+
+            <form id="payment-form" class="payment-form">
+              <label>
+                M-Pesa transaction code
+                <input type="text" name="transactionCode" placeholder="QJ4K7Q7G9P" required />
+              </label>
+
+              <label>
+                Payment plan
+                <select name="plan">
+                  <option value="intro">Introduction pack</option>
+                  <option value="vip">VIP</option>
+                </select>
+              </label>
+
+              <button class="primary-btn" type="submit">Submit payment</button>
+            </form>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <script src="app.js"></script>
+  </body>
+</html>
