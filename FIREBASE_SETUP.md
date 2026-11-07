@@ -1,44 +1,23 @@
-# Firebase setup (initial scaffold)
+# TamuDating manual payment setup (prototype)
 
-The repository is currently a static homepage prototype. These files prepare Firebase Hosting and Firestore rules; they do **not** connect the current page to Firebase yet.
+TamuDating's current website is a front-end prototype. It does not initiate STK Push, connect to Daraja, submit transaction codes to Firestore, or accept/verify live payments.
 
-## Before enabling Firebase
+## Intended manual Buy Goods flow
 
-1. Create a Firebase project and register a web app.
-2. Enable Firebase Authentication (email/password is a reasonable starting point) and require verified email addresses.
-3. Create the Firestore database and deploy `firestore.rules` using the Firebase CLI.
-4. Add Firebase's public web-app configuration to the eventual client app. Web config is not a service-account secret; never put service-account keys in the browser or repository.
-5. Sign in as `tamudating1@gmail.com` and verify that this account's email is verified. The rules grant this account admin access; protect its mailbox and use multi-factor authentication where available.
-6. Test all rules in the Firebase Emulator Suite before launch.
+1. Admin adds the official business Till number to the public payment instructions after confirming it.
+2. Member selects the plan: KSh 1,000 one-time introduction access or KSh 3,000/month VIP.
+3. Member opens M-Pesa and chooses **Lipa na M-Pesa → Buy Goods and Services**, enters the official Till number and exact amount, and confirms payment in M-Pesa.
+4. Member submits the M-Pesa transaction code in the signed-in app.
+5. A trusted backend saves a pending payment record in Firestore. Do not store transaction codes in browser localStorage or trust a client-side approval flag.
+6. Admin signs in using the verified Firebase account `tamudating1@gmail.com`, checks the payment against the actual M-Pesa merchant statement, then approves or rejects it.
+7. Firestore rules/server logic grant messaging access only after approval for both conversation participants. A payment submission alone must never unlock messaging.
 
-## Initial data model
+## Before taking real payments
 
-- `profiles/{uid}`: browseable profile only. Do not put email, transaction details, identity documents, or exact address here.
-- `privateUsers/{uid}`: account-private information, accessible only by the owner and admin.
-- `payments/{paymentId}`: member-submitted M-Pesa transaction code and plan, initially `pending`; only the admin can change or delete a payment.
-- `conversations/{conversationId}` and nested `messages/{messageId}`: rules require both participants' `messagingApproved` profile flag to be true.
-- `reports/{reportId}` and `blocks/{blockId}`: safety reports and user blocks.
+- Configure Firebase Authentication and Firestore, then implement the transaction submission and admin-review flow securely.
+- Keep payment documents private to the submitting member and authorized admin; avoid publishing transaction codes in profile documents.
+- Validate plan and amount on trusted server logic, prevent duplicate transaction-code reuse, and retain an audit trail for decisions.
+- Show clear support, refund, and payment terms. Never ask for a user's M-Pesa PIN or password.
+- Confirm local business, privacy, tax, and consumer obligations before launch.
 
-The admin must manually verify an M-Pesa transaction before changing its payment status and setting the member's `messagingApproved` flag. This project does not yet include a payment integration, approval UI, authentication UI, or profile/chat UI.
-
-## Important limitations
-
-- The rules enforce that only the designated verified email can administer Firestore records. Never use a client-side `isAdmin` field for authorization.
-- The current `profiles` rule allows signed-in members to read profile documents, so only public profile fields belong there.
-- Voice/video calls, push notifications, automated identity verification, and M-Pesa STK integration are not implemented.
-- Review local legal, privacy, and payment requirements before accepting payments or collecting identity information.
-
-## Deploy rules
-
-Install the Firebase CLI, sign in with an authorized account, select your project, then run:
-
-```sh
-firebase use YOUR_FIREBASE_PROJECT_ID
-firebase deploy --only firestore:rules
-```
-
-To deploy the static homepage after configuring Hosting:
-
-```sh
-firebase deploy --only hosting
-```
+No Till number was supplied, so the interface currently shows a placeholder. This is a manual payment design only—no M-Pesa integration or live submission is active.

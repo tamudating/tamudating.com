@@ -17,16 +17,13 @@
           <span class="brand-mark">♥</span>
           <span>TamuDating</span>
         </div>
-
         <nav class="sidebar-nav">
           <a href="#discover" class="active">Discover</a>
           <a href="#matches">Matches</a>
           <a href="#inbox">Inbox</a>
           <a href="#profile">My profile</a>
           <a href="#payments">Payments</a>
-          <a href="#admin">Admin</a>
         </nav>
-
         <button class="secondary-btn full logout-btn">Logout</button>
       </aside>
 
@@ -36,7 +33,6 @@
             <span class="eyebrow">Welcome back</span>
             <h1 id="dashboard-title">Your dashboard</h1>
           </div>
-
           <div class="profile-chip">
             <span class="status-dot"></span>
             <span id="member-status">Approval pending</span>
@@ -44,27 +40,17 @@
         </header>
 
         <section id="discover" class="panel-section">
-          <div class="section-heading-row">
-            <h2>Discover nearby</h2>
-            <button class="primary-btn small">Refresh</button>
-          </div>
-
+          <div class="section-heading-row"><h2>Discover nearby</h2></div>
           <div id="discover-grid" class="profile-grid"></div>
         </section>
 
         <section id="matches" class="panel-section">
-          <div class="section-heading-row">
-            <h2>Matches</h2>
-          </div>
-
+          <div class="section-heading-row"><h2>Matches</h2></div>
           <div id="matches-list" class="matches-list"></div>
         </section>
 
         <section id="inbox" class="panel-section">
-          <div class="section-heading-row">
-            <h2>Inbox</h2>
-          </div>
-
+          <div class="section-heading-row"><h2>Inbox</h2></div>
           <div class="inbox-layout">
             <aside id="chat-list" class="chat-list"></aside>
             <div id="chat-box" class="chat-box">
@@ -74,43 +60,39 @@
         </section>
 
         <section id="profile" class="panel-section">
-          <div class="section-heading-row">
-            <h2>My profile</h2>
-          </div>
-
+          <div class="section-heading-row"><h2>My profile</h2></div>
           <div id="profile-summary" class="profile-summary"></div>
         </section>
 
         <section id="payments" class="panel-section">
-          <div class="section-heading-row">
-            <h2>Payments</h2>
-          </div>
-
+          <div class="section-heading-row"><h2>Manual M-Pesa payment</h2></div>
           <div class="payment-card">
-            <h3>One-time payment: KSh 1,000</h3>
-            <p>Pay via M-Pesa and submit your transaction code for admin review.</p>
-
+            <p>Pay manually using <strong>Lipa na M-Pesa → Buy Goods and Services</strong>. Enter the business Till number below in M-Pesa, complete the payment, then submit the M-Pesa transaction code for admin review.</p>
+            <div class="till-box">
+              <span class="till-label">TamuDating Till number</span>
+              <strong id="till-number">Till number will be added before launch</strong>
+              <small>Do not send your M-Pesa PIN or password to anyone.</small>
+            </div>
             <form id="payment-form" class="payment-form">
               <label>
-                M-Pesa transaction code
-                <input type="text" name="transactionCode" placeholder="QJ4K7Q7G9P" required />
-              </label>
-
-              <label>
-                Payment plan
-                <select name="plan">
-                  <option value="intro">Introduction pack</option>
-                  <option value="vip">VIP</option>
+                Membership
+                <select name="plan" id="payment-plan" required>
+                  <option value="intro" data-amount="1000">Introduction access — KSh 1,000 one-time</option>
+                  <option value="vip" data-amount="3000">VIP — KSh 3,000 per month</option>
                 </select>
               </label>
-
-              <button class="primary-btn" type="submit">Submit payment</button>
+              <label>
+                M-Pesa transaction code
+                <input type="text" name="transactionCode" placeholder="Enter the code from your M-Pesa message" required maxlength="20" autocomplete="off" />
+              </label>
+              <p id="payment-amount" class="payment-amount">Amount to pay: KSh 1,000</p>
+              <p class="payment-note">Your submission will remain pending until the admin checks the payment and approves it. Messaging is enabled only after approval for both people. This prototype does not yet submit or save payment data.</p>
+              <button class="primary-btn" type="submit">Submit transaction code</button>
             </form>
           </div>
         </section>
       </main>
     </div>
-
     <script src="app.js"></script>
   </body>
 </html>
