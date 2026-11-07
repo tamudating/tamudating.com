@@ -1,4 +1,30 @@
 <!DOCTYPE html>
-<html lang="en"><head><meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><title>Admin Panel | TamuDating</title><link rel="preconnect" href="https://fonts.googleapis.com" /><link rel="preconnect" href="https://fonts.gstatic.com" /><link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet" /><link rel="stylesheet" href="styles.css" /></head>
-<body class="admin-page"><div class="container admin-wrapper"><header class="admin-header"><div class="brand"><span class="brand-mark">♥</span><span>TamuDating Admin</span></div><div class="profile-chip"><span class="status-dot admin-dot"></span><span>Signed-in admin: tamudating1@gmail.com</span></div><button class="secondary-btn admin-logout" type="button">Logout</button></header>
-<main class="admin-panel"><section class="panel-section"><div class="section-heading-row"><h2>Manual payment review</h2></div><div id="admin-payments" class="admin-table">Checking administrator access…</div></section></main></div><script type="module" src="app.js"></script></body></html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin Panel | TamuDating</title>
+    <meta name="description" content="Review member profiles and manual M-Pesa payments." />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body class="admin-page">
+    <div class="container admin-wrapper">
+      <header class="admin-header">
+        <div class="brand"><span class="brand-mark">♥</span><span>TamuDating Admin</span></div>
+        <div class="profile-chip admin-chip"><span class="status-dot admin-dot"></span><span>Admin: tamudating1@gmail.com</span></div>
+        <button class="secondary-btn admin-logout" type="button">Logout</button>
+      </header>
+      <main class="admin-panel">
+        <section class="panel-section">
+          <div class="section-heading-row"><h2>Member and payment approvals</h2></div>
+          <p>Approve profiles after review. Verify every M-Pesa payment against the official merchant statement before approving it.</p>
+          <div id="admin-payments" class="admin-table" role="status">Checking administrator access…</div>
+        </section>
+      </main>
+    </div>
+    <script type="module" src="app.js"></script>
+  </body>
+</html>

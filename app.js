@@ -13,7 +13,6 @@ import {
   getDoc,
   getDocs,
   serverTimestamp,
-  updateDoc,
   writeBatch
 } from 'https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js';
 
@@ -57,6 +56,7 @@ async function handleSignup(form) {
   const data = Object.fromEntries(new FormData(form).entries());
   const age = Number(data.age);
   const photos = String(data.photos || '').split(',').map((url) => safeImageUrl(url.trim())).filter(Boolean);
+
   if (!Number.isInteger(age) || age < 18) {
     showMessage(form, 'You must be at least 18 years old to create an account.', true);
     return;
@@ -93,7 +93,8 @@ async function handleSignup(form) {
     });
     await batch.commit();
     await sendEmailVerification(user);
-    showMessage(form, 'Account created. Check your email and verify it, then sign in.');
+    await signOut(auth);
+    showMessage(form, 'Account created. Check your email and verify it, then sign in. Your profile will need admin approval before discovery.');
     form.reset();
   } catch (error) {
     showMessage(form, error.message || 'Could not create your account. Please try again.', true);
@@ -104,9 +105,11 @@ async function handleSignup(form) {
 
 async function handleLogin(form) {
   const data = new FormData(form);
+  const email = String(data.get('email') || '').trim();
+  const password = String(data.get('password') || '');
   setBusy(form, true);
   try {
-    const credential = await signInWithEmailAndPassword(auth, data.get('email').trim(), data.get('password'));
+    const credential = await signInWithEmailAndPassword(auth, email, password);
     if (!credential.user.emailVerified) {
       await sendEmailVerification(credential.user);
       await signOut(auth);
@@ -121,14 +124,14 @@ async function handleLogin(form) {
   }
 }
 
-function renderProfileCard(profile, uid) {
+function renderProfileCard(profile) {
   const image = safeImageUrl(profile.photoUrls?.[0] || '');
   const photo = image ? `<img src="${escapeHtml(image)}" alt="Profile of ${escapeHtml(profile.displayName || 'member')}" loading="lazy">` : '';
   return `<article class="profile-card">${photo}<div class="profile-body">
     <div class="profile-header"><h3>${escapeHtml(profile.displayName || 'Member')}, ${Number(profile.age) || ''}</h3></div>
     <p class="meta">${escapeHtml(profile.location || '')}</p><p>${escapeHtml(profile.bio || '')}</p>
     <div class="chips"><span>${escapeHtml(profile.loveLanguage || '')}</span><span>${escapeHtml(profile.relationshipGoal || '')}</span></div>
-    <button class="primary-btn small" type="button" disabled title="Matching will be enabled in a later step">Matching coming soon</button>
+    <p>Profile approved. Matching and live chat are not enabled yet.</p>
   </div></article>`;
 }
 
@@ -136,14 +139,17 @@ async function loadDashboard(user) {
   const title = $('#dashboard-title');
   if (title) title.textContent = `Welcome, ${user.displayName || user.email || 'member'}`;
   const status = $('#member-status');
-  const profileRef = doc(db, 'profiles', user.uid);
   try {
     const [profileSnap, allProfiles] = await Promise.all([
-      getDoc(profileRef),
+      getDoc(doc(db, 'profiles', user.uid)),
       getDocs(collection(db, 'profiles'))
     ]);
     const profile = profileSnap.data() || {};
-    if (status) status.textContent = profile.messagingApproved ? 'Approved to message' : 'Payment approval pending';
+    const profileApproved = profile.profileApproved === true;
+    const paymentApproved = profile.messagingApproved === true;
+    if (status) {
+      status.textContent = !profileApproved ? 'Profile approval pending' : paymentApproved ? 'Profile and payment approved' : 'Payment approval pending';
+    }
     const summary = $('#profile-summary');
     if (summary) {
       const image = safeImageUrl(profile.photoUrls?.[0] || '');
@@ -151,8 +157,10 @@ async function loadDashboard(user) {
     }
     const grid = $('#discover-grid');
     if (grid) {
-      const profiles = allProfiles.docs.filter((item) => item.id !== user.uid && item.data().profileApproved === true);
-      grid.innerHTML = profiles.length ? profiles.map((item) => renderProfileCard(item.data(), item.id)).join('') : '<p>Profiles approved for discovery will appear here. Matching is not active yet.</p>';
+      const profiles = allProfiles.docs
+        .filter((item) => item.id !== user.uid && item.data().profileApproved === true)
+        .map((item) => item.data());
+      grid.innerHTML = profiles.length ? profiles.map(renderProfileCard).join('') : '<p>No other approved profiles are available yet.</p>';
     }
   } catch (error) {
     if (status) status.textContent = 'Could not load account data';
@@ -194,32 +202,70 @@ async function loadAdmin(user) {
     target.textContent = 'Access denied. Sign in with the verified administrator account.';
     return;
   }
-  target.textContent = 'Loading payment submissions…';
+  target.textContent = 'Loading profile and payment review…';
   try {
-    const snapshot = await getDocs(collection(db, 'payments'));
-    const payments = snapshot.docs.map((item) => ({ id: item.id, ...item.data() }))
-      .sort((a, b) => (b.createdAt?.toMillis?.() || 0) - (a.createdAt?.toMillis?.() || 0));
-    if (!payments.length) {
-      target.textContent = 'No payment submissions yet.';
-      return;
-    }
-    target.innerHTML = `<p>Verify each transaction against your actual M-Pesa merchant statement before approving.</p><table class="admin-table-inner"><thead><tr><th>Member UID</th><th>Plan</th><th>Amount</th><th>Transaction code</th><th>Status</th><th>Review</th></tr></thead><tbody>${payments.map((payment) => `<tr><td>${escapeHtml(payment.uid)}</td><td>${escapeHtml(payment.plan)}</td><td>KSh ${Number(payment.amountKsh) || 0}</td><td>${escapeHtml(payment.transactionCode)}</td><td>${escapeHtml(payment.status)}</td><td>${payment.status === 'pending' ? `<button class="primary-btn small" data-review="approved" data-id="${escapeHtml(payment.id)}" data-uid="${escapeHtml(payment.uid)}">Approve</button> <button class="secondary-btn small" data-review="rejected" data-id="${escapeHtml(payment.id)}" data-uid="${escapeHtml(payment.uid)}">Reject</button>` : 'Reviewed'}</td></tr>`).join('')}</tbody></table>`;
-    target.querySelectorAll('[data-review]').forEach((button) => button.addEventListener('click', async () => {
-      const decision = button.dataset.review;
-      const batch = writeBatch(db);
-      batch.update(doc(db, 'payments', button.dataset.id), { status: decision, reviewedAt: serverTimestamp() });
-      batch.update(doc(db, 'profiles', button.dataset.uid), { messagingApproved: decision === 'approved' });
-      button.disabled = true;
-      try {
-        await batch.commit();
-        await loadAdmin(user);
-      } catch (error) {
-        button.disabled = false;
-        alert(error.message || 'Could not update this payment.');
-      }
-    }));
+    const [profileSnap, paymentSnap] = await Promise.all([
+      getDocs(collection(db, 'profiles')),
+      getDocs(collection(db, 'payments'))
+    ]);
+    const profiles = profileSnap.docs.map((item) => ({ id: item.id, ...item.data() }));
+    const payments = paymentSnap.docs.map((item) => ({ id: item.id, ...item.data() }));
+    const pendingProfiles = profiles.filter((profile) => profile.profileApproved !== true);
+    const pendingPayments = payments.filter((payment) => payment.status === 'pending');
+
+    target.innerHTML = `
+      <section class="admin-section-block"><h3>Profiles awaiting approval</h3>
+        ${pendingProfiles.length ? `<table class="admin-table-inner"><thead><tr><th>Name</th><th>Age</th><th>Town</th><th>Action</th></tr></thead><tbody>${pendingProfiles.map((profile) => `<tr><td>${escapeHtml(profile.displayName || 'Member')}</td><td>${Number(profile.age) || '-'}</td><td>${escapeHtml(profile.location || '')}</td><td><button type="button" class="primary-btn small" data-profile-approve="${escapeHtml(profile.id)}">Approve profile</button></td></tr>`).join('')}</tbody></table>` : '<p>No profiles awaiting approval.</p>'}
+      </section>
+      <section class="admin-section-block"><h3>Payments awaiting manual verification</h3>
+        <p>Compare every transaction code and amount with your official M-Pesa Buy Goods statement before approving.</p>
+        ${pendingPayments.length ? `<table class="admin-table-inner"><thead><tr><th>Member UID</th><th>Plan</th><th>Amount</th><th>Transaction code</th><th>Action</th></tr></thead><tbody>${pendingPayments.map((payment) => `<tr><td>${escapeHtml(payment.uid || '')}</td><td>${escapeHtml(payment.plan || '')}</td><td>KSh ${Number(payment.amountKsh) || 0}</td><td>${escapeHtml(payment.transactionCode || '')}</td><td><button type="button" class="primary-btn small" data-payment-decision="approved" data-payment-id="${escapeHtml(payment.id)}" data-uid="${escapeHtml(payment.uid || '')}">Approve payment</button> <button type="button" class="secondary-btn small" data-payment-decision="rejected" data-payment-id="${escapeHtml(payment.id)}">Reject</button></td></tr>`).join('')}</tbody></table>` : '<p>No payments awaiting review.</p>'}
+      </section>`;
+
+    target.querySelectorAll('[data-profile-approve]').forEach((button) => {
+      button.addEventListener('click', async () => {
+        button.disabled = true;
+        try {
+          const batch = writeBatch(db);
+          batch.update(doc(db, 'profiles', button.dataset.profileApprove), {
+            profileApproved: true,
+            approvedAt: serverTimestamp()
+          });
+          await batch.commit();
+          await loadAdmin(user);
+        } catch (error) {
+          button.disabled = false;
+          alert(error.message || 'Could not approve this profile.');
+        }
+      });
+    });
+
+    target.querySelectorAll('[data-payment-decision]').forEach((button) => {
+      button.addEventListener('click', async () => {
+        const paymentId = button.dataset.paymentId;
+        const uid = button.dataset.uid;
+        const decision = button.dataset.paymentDecision;
+        if (!paymentId) return;
+        button.disabled = true;
+        try {
+          const batch = writeBatch(db);
+          batch.update(doc(db, 'payments', paymentId), {
+            status: decision,
+            reviewedAt: serverTimestamp()
+          });
+          if (decision === 'approved' && uid) {
+            batch.update(doc(db, 'profiles', uid), { messagingApproved: true });
+          }
+          await batch.commit();
+          await loadAdmin(user);
+        } catch (error) {
+          button.disabled = false;
+          alert(error.message || 'Could not update this payment.');
+        }
+      });
+    });
   } catch (error) {
-    target.textContent = `Could not load payments: ${error.message}`;
+    target.textContent = `Could not load approvals: ${error.message}`;
   }
 }
 
@@ -248,7 +294,10 @@ function init() {
         submitManualPayment(paymentForm, user);
       });
       const logout = $('.logout-btn');
-      if (logout) logout.addEventListener('click', async () => { await signOut(auth); window.location.href = 'login.html'; });
+      if (logout) logout.addEventListener('click', async () => {
+        await signOut(auth);
+        window.location.href = 'login.html';
+      });
     }
     if ($('#admin-payments')) {
       if (!user) {
@@ -256,6 +305,11 @@ function init() {
         return;
       }
       await loadAdmin(user);
+      const logout = $('.admin-logout');
+      if (logout) logout.addEventListener('click', async () => {
+        await signOut(auth);
+        window.location.href = 'login.html';
+      });
     }
   });
 }

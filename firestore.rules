@@ -17,7 +17,8 @@ service cloud.firestore {
 
     function canMessage(uid) {
       return exists(/databases/$(database)/documents/profiles/$(uid))
-        && get(/databases/$(database)/documents/profiles/$(uid)).data.messagingApproved == true;
+        && get(/databases/$(database)/documents/profiles/$(uid)).data.messagingApproved == true
+        && get(/databases/$(database)/documents/profiles/$(uid)).data.profileApproved == true;
     }
 
     match /profiles/{uid} {
@@ -65,14 +66,12 @@ service cloud.firestore {
       function isMember() {
         return signedIn() && request.auth.uid in resource.data.memberUids;
       }
-
       function bothMembersApproved(data) {
         return data.memberUids is list
           && data.memberUids.size() == 2
           && canMessage(data.memberUids[0])
           && canMessage(data.memberUids[1]);
       }
-
       allow read: if isAdmin() || isMember();
       allow create: if signedIn()
         && request.resource.data.memberUids is list
