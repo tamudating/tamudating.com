@@ -10,50 +10,31 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="styles.css" />
-    <link rel="stylesheet" href="home-upload.css?v=3" />
-    <link rel="stylesheet" href="homepage-image.css?v=1" />
+    <link rel="stylesheet" href="home-upload.css?v=4" />
+    <link rel="stylesheet" href="homepage-image.css?v=2" />
   </head>
   <body class="home-page">
     <header class="topbar topbar-home">
       <div class="container nav">
-        <div class="brand-group">
-          <span class="brand-mark">♥</span>
-          <span class="brand-text">Tamu Dating</span>
-        </div>
-        <nav class="nav-links" aria-label="Main navigation">
-          <a href="#about">About</a>
-          <a href="#safety">Safety</a>
-        </nav>
-        <div class="nav-actions">
-          <a class="link-btn" href="login.html">Sign in</a>
-          <a class="primary-btn" href="signup.html">Join now</a>
-        </div>
+        <a class="brand-group" href="index.html" aria-label="Tamu Dating home">
+          <span class="brand-mark">♥</span><span class="brand-text">Tamu Dating</span>
+        </a>
+        <nav class="nav-links" aria-label="Main navigation"><a href="#about">About</a><a href="#safety">Safety</a></nav>
+        <div class="nav-actions"><a class="link-btn" href="login.html">Sign in</a><a class="primary-btn" href="signup.html">Join now</a></div>
       </div>
     </header>
 
     <main class="main-homepage">
-      <section class="poster-section">
-        <div class="poster-shell container">
-          <div class="poster-title-wrap">
-            <div class="poster-gold-title">Tamu Dating</div>
-            <div class="poster-script">Mahali penzi tamu linaanzia</div>
-          </div>
-          <div class="poster-couple-photo" role="img" aria-label="A mature woman and young man standing together at sunset on a beach in Kenya"></div>
-          <div class="poster-lower-banner">Mature Women × Confident Young Men</div>
-          <div class="poster-meta-row">
-            <span>18+ Only</span><span>Verified Profiles</span><span>Real Dating</span><span>Real Connections</span>
-          </div>
-          <div class="poster-bottom-line">Safe • Discreet • Respectful • Real Connections</div>
-          <a class="poster-join" href="signup.html">Join Now • @tamudating.ke</a>
+      <section class="poster-section" aria-label="Tamu Dating poster">
+        <div class="poster-image-wrap">
+          <img class="poster-image" src="./ch.png.jpg" alt="Tamu Dating poster: a mature woman and a young man together on a Diani Beach sunset, with the message Mature Women × Confident Young Men." />
         </div>
+        <div class="poster-signup"><a class="poster-join" href="signup.html">Create your profile</a></div>
       </section>
 
       <section id="about" class="home-about">
         <div class="container home-about-inner">
-          <div class="about-copy">
-            <span class="eyebrow">A local place to begin</span>
-            <h2>Good connections start with respect.</h2>
-          </div>
+          <div class="about-copy"><span class="eyebrow">A local place to begin</span><h2>Good connections start with respect.</h2></div>
           <p>Meet adults in Mombasa, Diani Beach and beyond who are looking for honest conversation and mutual chemistry. Create a profile, verify your email, and wait for profile review before discovery.</p>
         </div>
       </section>
@@ -67,11 +48,9 @@
       </section>
     </main>
 
-    <footer class="footer home-footer">
-      <div class="container footer-inner">
-        <div><div class="brand footer-brand"><span class="brand-mark">♥</span><span>Tamu Dating</span></div><p>Local connections. Respectful beginnings.</p></div>
-        <div class="footer-actions"><a href="login.html">Sign in</a><a href="signup.html">Join now</a></div>
-      </div>
-    </footer>
+    <footer class="footer home-footer"><div class="container footer-inner">
+      <div><div class="brand footer-brand"><span class="brand-mark">♥</span><span>Tamu Dating</span></div><p>Local connections. Respectful beginnings.</p></div>
+      <div class="footer-actions"><a href="login.html">Sign in</a><a href="signup.html">Join now</a></div>
+    </div></footer>
   </body>
 </html>

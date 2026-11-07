@@ -1,7 +1,22 @@
-/* Use the exact user-provided poster image from the repository root. */
-.poster-couple-photo {
-  background-image: url('./ch.png');
-  background-position: center center;
-  background-repeat: no-repeat;
-  background-size: cover;
+/* Display the exact complete poster image uploaded to the repository as ch.png.jpg. */
+.poster-section {
+  padding: clamp(12px, 2.5vw, 30px) 0 34px;
+  background: linear-gradient(180deg, #f3d9df 0%, #fff8f8 100%);
+}
+.poster-image-wrap {
+  width: min(100%, 980px);
+  margin: 0 auto;
+  padding: 0 12px;
+}
+.poster-image {
+  display: block;
+  width: 100%;
+  height: auto;
+  border: 1px solid rgba(164, 103, 42, .65);
+  box-shadow: 0 16px 48px rgba(104, 35, 62, .2);
+}
+.poster-signup {
+  display: flex;
+  justify-content: center;
+  padding: 20px 16px 8px;
 }
