@@ -1,7 +1,14 @@
 /* Tamu Dating poster-inspired landing page and required image upload field */
 .home-page { background: #fff8f8; color: #4a2032; }
-.home-page .topbar { background: rgba(255, 249, 249, .92); }
-.home-page .brand { color: #8d294b; }
+.home-page .topbar { position: relative; z-index: 2; background: rgba(255, 249, 249, .96); border-bottom: 1px solid rgba(184,137,54,.22); }
+.home-page .nav { min-height: 76px; display: flex; align-items: center; justify-content: space-between; gap: 24px; }
+.home-page .brand { display: inline-flex; align-items: center; gap: 10px; color: #8d294b; font-size: 1.45rem; font-weight: 800; white-space: nowrap; }
+.home-page .brand-mark { flex: 0 0 38px; width: 38px; height: 38px; }
+.home-page .nav-links, .home-page .nav-actions { display: flex; align-items: center; gap: 22px; }
+.home-page .nav-links a, .home-page .link-btn { color: #64283f; font-weight: 700; }
+.home-page .nav-actions { gap: 16px; }
+.home-page .primary-btn { display: inline-flex; align-items: center; justify-content: center; background: linear-gradient(135deg,#d83b78,#f16aa0); color: white; box-shadow: 0 10px 24px rgba(170,52,98,.2); }
+.home-page .footer { padding: 28px 0; background: #fffaf8; border-top: 1px solid rgba(61,29,56,.08); }
 .poster-hero {
   padding: 46px 0 58px;
   background: radial-gradient(ellipse at 50% 20%, #fff8db 0, transparent 39%), linear-gradient(135deg, #f8d3d9, #f9e3d4 52%, #eebbc8);
@@ -32,7 +39,7 @@
 .poster-values { color: #704125; font-weight: 700; }
 .poster-values b { color: #b98934; padding: 0 .3em; }
 .poster-cta { display: inline-flex; gap: 12px; align-items: center; margin-top: 16px; padding: 1rem 1.7rem; }
-.home-about { background: #fffaf8; }
+.home-about { padding: 64px 0; background: #fffaf8; }
 .home-about-inner { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; align-items: center; }
 .home-about h2 { margin: 0; color: #64283f; font-family: 'DM Serif Display', Georgia, serif; font-size: clamp(2rem, 4vw, 3.2rem); }
 .home-about-inner > p { color: #685b6d; line-height: 1.8; }
@@ -45,4 +52,18 @@
 .signup-brand { margin-bottom: 26px; }
 .photo-upload-label input[type="file"] { padding: .65rem; background: #fff9fb; }
 .upload-help { color: #685b6d; font-size: .85rem; font-weight: 500; line-height: 1.5; }
-@media (max-width: 700px) { .home-about-inner, .home-values { grid-template-columns: 1fr; } .poster-hero { padding: 24px 0 36px; } .poster-frame { width: calc(100% - 24px); } .poster-trust { line-height: 1.8; } }
+@media (max-width: 700px) {
+  .home-page .nav { flex-wrap: wrap; padding-top: 12px; padding-bottom: 12px; }
+  .home-page .nav-links { order: 3; width: 100%; justify-content: center; gap: 24px; }
+  .home-page .nav-actions { margin-left: auto; gap: 12px; }
+  .home-about-inner, .home-values { grid-template-columns: 1fr; }
+  .poster-hero { padding: 24px 0 36px; }
+  .poster-frame { width: calc(100% - 24px); }
+  .poster-trust { line-height: 1.8; }
+}
+@media (max-width: 440px) {
+  .home-page .nav-links { justify-content: flex-start; }
+  .home-page .nav-actions .primary-btn { padding: .75rem 1rem; }
+  .poster-sparkle { letter-spacing: .35em; }
+  .poster-photo { height: 300px; }
+}
