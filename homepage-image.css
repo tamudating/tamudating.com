@@ -1,0 +1,7 @@
+/* Use the exact user-provided poster image from the repository root. */
+.poster-couple-photo {
+  background-image: url('./ch.png');
+  background-position: center center;
+  background-repeat: no-repeat;
+  background-size: cover;
+}
