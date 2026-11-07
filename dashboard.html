@@ -1,25 +1,93 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Dashboard | TamuDating</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com" /><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet" /><link rel="stylesheet" href="styles.css" />
+    <meta name="description" content="TamuDating dashboard for profile browsing, payments, and messaging." />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="styles.css" />
   </head>
-  <body class="dashboard-body"><div class="dashboard-shell">
-    <aside class="sidebar"><div class="brand sidebar-brand"><span class="brand-mark">♥</span><span>TamuDating</span></div><nav class="sidebar-nav"><a href="#discover">Discover</a><a href="#matches">Matches</a><a href="#inbox">Inbox</a><a href="#profile">My profile</a><a href="#payments">Payments</a></nav><button class="secondary-btn full logout-btn">Logout</button></aside>
-    <main class="dashboard-main"><header class="dashboard-topbar"><div><span class="eyebrow">Member area</span><h1 id="dashboard-title">Your dashboard</h1></div><div class="profile-chip"><span class="status-dot"></span><span id="member-status">Loading account…</span></div></header>
-      <section id="discover" class="panel-section"><div class="section-heading-row"><h2>Discover nearby</h2></div><div id="discover-grid" class="profile-grid">Loading profiles…</div></section>
-      <section id="matches" class="panel-section"><div class="section-heading-row"><h2>Matches</h2></div><p>Matching will be added after profiles and consent flows are tested.</p></section>
-      <section id="inbox" class="panel-section"><div class="section-heading-row"><h2>Inbox</h2></div><p>Live messaging is not enabled yet. It will be added after approval rules are tested.</p></section>
-      <section id="profile" class="panel-section"><div class="section-heading-row"><h2>My profile</h2></div><div id="profile-summary">Loading profile…</div></section>
-      <section id="payments" class="panel-section"><div class="section-heading-row"><h2>Manual M-Pesa payment</h2></div><div class="payment-card">
-        <p>After the Till number is confirmed, pay manually using <strong>Lipa na M-Pesa → Buy Goods and Services</strong>. Enter TamuDating's Till number, confirm the displayed amount, and complete payment on your phone.</p>
-        <div class="till-box"><span class="till-label">TamuDating Till number</span><strong>Not configured yet</strong><small>Never share your M-Pesa PIN or password.</small></div>
-        <form id="payment-form" class="payment-form"><label>Membership<select name="plan" required><option value="intro">Introduction access — KSh 1,000 one-time</option><option value="vip">VIP — KSh 3,000 per month</option></select></label>
-          <label>M-Pesa transaction code<input type="text" name="transactionCode" placeholder="Enter the code from your M-Pesa message" required maxlength="20" autocomplete="off" /></label>
-          <p class="payment-note">Only submit after the Till is configured and you have paid. The admin will verify it manually; payment submission does not unlock messaging.</p>
-          <button class="primary-btn" type="submit">Submit transaction code</button></form>
-      </div></section>
-    </main></div><script type="module" src="app.js"></script></body>
+  <body class="dashboard-body">
+    <div class="dashboard-shell">
+      <aside class="sidebar">
+        <div class="brand sidebar-brand">
+          <span class="brand-mark">♥</span>
+          <span>TamuDating</span>
+        </div>
+        <nav class="sidebar-nav">
+          <a href="#discover">Discover</a>
+          <a href="#matches">Matches</a>
+          <a href="#inbox">Inbox</a>
+          <a href="#profile">My profile</a>
+          <a href="#payments">Payments</a>
+        </nav>
+        <button class="secondary-btn full logout-btn">Logout</button>
+      </aside>
+
+      <main class="dashboard-main">
+        <header class="dashboard-topbar">
+          <div>
+            <span class="eyebrow">Member area</span>
+            <h1 id="dashboard-title">Your dashboard</h1>
+          </div>
+          <div class="profile-chip">
+            <span class="status-dot"></span>
+            <span id="member-status">Loading account…</span>
+          </div>
+        </header>
+
+        <section id="discover" class="panel-section">
+          <div class="section-heading-row"><h2>Discover nearby</h2></div>
+          <div id="discover-grid" class="profile-grid">Loading profiles…</div>
+        </section>
+
+        <section id="matches" class="panel-section">
+          <div class="section-heading-row"><h2>Matches</h2></div>
+          <p>Matching will be added after profiles and consent flows are tested.</p>
+        </section>
+
+        <section id="inbox" class="panel-section">
+          <div class="section-heading-row"><h2>Inbox</h2></div>
+          <p>Live messaging is not enabled yet. It will be added after approval rules are tested.</p>
+        </section>
+
+        <section id="profile" class="panel-section">
+          <div class="section-heading-row"><h2>My profile</h2></div>
+          <div id="profile-summary">Loading profile…</div>
+        </section>
+
+        <section id="payments" class="panel-section">
+          <div class="section-heading-row"><h2>Manual M-Pesa payment</h2></div>
+          <div class="payment-card">
+            <p>Pay manually using <strong>Lipa na M-Pesa → Buy Goods and Services</strong>. Enter the business Till number below in M-Pesa, complete the payment, then submit the M-Pesa transaction code for admin review.</p>
+            <div class="till-box">
+              <span class="till-label">TamuDating Till number</span>
+              <strong id="till-number">1875493</strong>
+              <small>Do not send your M-Pesa PIN or password to anyone.</small>
+            </div>
+            <form id="payment-form" class="payment-form">
+              <label>
+                Membership
+                <select name="plan" id="payment-plan" required>
+                  <option value="intro" data-amount="1000">Introduction access — KSh 1,000 one-time</option>
+                  <option value="vip" data-amount="3000">VIP — KSh 3,000 per month</option>
+                </select>
+              </label>
+              <label>
+                M-Pesa transaction code
+                <input type="text" name="transactionCode" placeholder="Enter the code from your M-Pesa message" required maxlength="20" autocomplete="off" />
+              </label>
+              <p id="payment-amount" class="payment-amount">Amount to pay: KSh 1,000</p>
+              <p class="payment-note">Your submission will remain pending until the admin checks the payment and approves it. Messaging is enabled only after approval for both people. This prototype does not yet submit or save payment data.</p>
+              <button class="primary-btn" type="submit">Submit transaction code</button>
+            </form>
+          </div>
+        </section>
+      </main>
+    </div>
+    <script type="module" src="app.js"></script>
+  </body>
 </html>
